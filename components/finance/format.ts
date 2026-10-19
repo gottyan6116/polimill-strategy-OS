@@ -10,3 +10,4 @@ export const percent = (value: number | null) =>
   value === null ? "—" : `${number(value)}%`;
 export const times = (value: number | null) =>
   value === null ? "—" : `${number(value, 2)}回`;
+export const preciseMoney=(value:number)=>value.toLocaleString('ja-JP',{maximumFractionDigits:6});

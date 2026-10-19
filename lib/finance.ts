@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { FinanceMonth, Invoice, Settlement } from "./operations";
 const nonnegative = z.number().finite().min(0).max(1e9);
 const signed = z.number().finite().min(-1e9).max(1e9);
 export const financeFieldsSchema = z
@@ -40,6 +41,9 @@ export type BusinessUnit = { id: string; name: string; color: string };
 export type FinanceWorkspace = {
   units: BusinessUnit[];
   records: FinanceRecord[];
+  months: FinanceMonth[];
+  invoices: Invoice[];
+  settlements: Settlement[];
 };
 const ratio = (n: number, d: number, scale = 1) =>
   d > 0 ? (n / d) * scale : null;

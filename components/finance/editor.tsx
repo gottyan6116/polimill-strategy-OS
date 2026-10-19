@@ -114,7 +114,7 @@ export default function FinanceEditor({
         <p className="muted small">
           税率は0.30＝30%。投資支出・返済はマイナスで入力します。
           {hasPrevious ? "期首残高は前年度から引き継がれます。" : ""}
-          変更すると後続年度の期首残高も更新されます。
+          変更すると後続年度の期首残高も更新されます。売上高・売上原価・販管費を変更すると、月次の配分も現在の割合で再計算されます。
         </p>
         {error && (
           <p className="form-error" role="alert">

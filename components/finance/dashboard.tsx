@@ -11,7 +11,9 @@ import {
 import { money, percent } from "./format";
 import { PortfolioView, RoicView, IndicatorsView, CashflowView } from "./views";
 import FinanceEditor from "./editor";
+import OperationsOverview from "./operations";
 const tabs = [
+  { id: "operations", name: "損益・入出金" },
   { id: "portfolio", name: "ポートフォリオ" },
   { id: "roic", name: "ROICツリー" },
   { id: "indicators", name: "財務指標" },
@@ -216,6 +218,16 @@ export default function FinancialDashboard() {
         aria-labelledby={`finance-tab-${view}`}
         className="finance-content"
       >
+        {view === "operations" && (
+          <OperationsOverview
+            data={data}
+            periods={selected}
+            onSaved={async () => {
+              await load();
+              setNotice("月次・入出金データを保存しました。");
+            }}
+          />
+        )}
         {view === "portfolio" && <PortfolioView rows={rows} onSelect={drill} />}{" "}
         {view === "roic" && <RoicView m={m} records={selected} />}{" "}
         {view === "indicators" && <IndicatorsView history={history} m={m} />}{" "}

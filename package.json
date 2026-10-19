@@ -36,7 +36,7 @@
     "start": "wrangler dev --config dist/server/wrangler.json --persist-to .wrangler/state",
     "deploy": "vinext-cloudflare deploy --config dist/server/wrangler.json",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test tests/auth.test.ts",
+    "test": "tsx --test tests/*.test.ts",
     "test:e2e": "playwright test",
     "db:migrate:local": "wrangler d1 migrations apply polimill-strategy-os --local",
     "db:migrate:remote": "wrangler d1 migrations apply polimill-strategy-os --remote",

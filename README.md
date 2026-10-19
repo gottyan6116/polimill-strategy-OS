@@ -14,6 +14,19 @@
 
 ## 技術構成と現在のCloudflare対応
 
+### 財務分析（追加）
+
+左メニュー「財務分析」から次の4画面を利用できます。年度（2024–2026）・事業を切り替え、3つの架空事業を比較できます。
+
+- **ポートフォリオ**: 売上高成長率×ROICのバブル、売上構成、事業別NOPAT、比較表。バブル・比較表から事業のROICへ掘り下げ。
+- **ROICツリー**: NOPAT利益率×投下資本回転率、および売上・費用・運転資本・営業固定資産の内訳。
+- **財務指標**: 収益性・成長性・効率性・安全性の推移と年度別表。
+- **キャッシュフロー**: 営業・投資・財務CFとフリーCFの推移、期首→期末現預金の増減図・明細。
+
+「試算データ」の編集から損益・資産負債・CFの仮説をD1へ保存します。過年度の変更は後続年度の期首現預金・総資産・投下資本へトランザクション内で引き継がれ、競合する編集は409で拒否します。追加のテーブル・架空データは `0003_financial_analysis.sql` で管理します。
+
+金額単位は百万円。ROICはNOPAT÷期首・期末平均投下資本。全社は分子・分母を合算し、単純平均は使いません。分母が0以下・比較前年度がない指標は「—」。計算定義・簡便税額・事業間取引未消去などの前提は画面と [財務分析設計](docs/finance-design.md) に明示しています。正式な連結財務諸表ではありません。
+
 Next.js 16のApp Router API、React、TypeScript、Tailwind CSSを使用。Cloudflare Workersへは **vinext + Cloudflare Vite plugin** で配信します。vinextはNext.js APIをVite上で実装する方式で、Cloudflare公式の現行推奨です。通常のNext.jsサーバーをそのままWorkersで動かす構成ではありません。
 
 - [Cloudflare Next.jsガイド](https://developers.cloudflare.com/workers/framework-guides/web-apps/nextjs/)

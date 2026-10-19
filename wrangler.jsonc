@@ -1,0 +1,22 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "polimill-strategy-os",
+  "compatibility_date": "2026-10-19",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "vinext/server/fetch-handler",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "polimill-strategy-os",
+      "database_id": "e1b41f2d-e47d-4758-b76a-4631a12eab7c",
+      "migrations_dir": "migrations",
+    },
+  ],
+  "assets": {
+    "directory": "dist/client",
+    "html_handling": "none",
+    "not_found_handling": "none",
+    "binding": "ASSETS",
+    "run_worker_first": ["/*", "!/_next/static/*", "!/*/_next/static/*"],
+  },
+}

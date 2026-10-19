@@ -1,0 +1,16 @@
+PRAGMA foreign_keys = ON;
+CREATE TABLE organizations (id TEXT PRIMARY KEY, name TEXT NOT NULL);
+CREATE TABLE departments (id TEXT PRIMARY KEY, organization_id TEXT NOT NULL REFERENCES organizations(id), name TEXT NOT NULL, mission TEXT NOT NULL, owner TEXT NOT NULL);
+CREATE TABLE goals (id TEXT PRIMARY KEY, department_id TEXT NOT NULL REFERENCES departments(id), title TEXT NOT NULL, hypothesis TEXT NOT NULL, owner TEXT NOT NULL, version INTEGER NOT NULL DEFAULT 1, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP);
+CREATE TABLE kpis (id TEXT PRIMARY KEY, goal_id TEXT NOT NULL REFERENCES goals(id), name TEXT NOT NULL, actual REAL NOT NULL CHECK(actual >= 0), target REAL NOT NULL CHECK(target > 0), unit TEXT NOT NULL, direction TEXT NOT NULL DEFAULT 'up' CHECK(direction IN ('up','down')), version INTEGER NOT NULL DEFAULT 1, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP);
+CREATE TABLE kpi_history (kpi_id TEXT NOT NULL REFERENCES kpis(id), month TEXT NOT NULL, value REAL NOT NULL, PRIMARY KEY(kpi_id, month));
+CREATE TABLE initiatives (id TEXT PRIMARY KEY, goal_id TEXT NOT NULL REFERENCES goals(id), title TEXT NOT NULL, owner TEXT NOT NULL, progress INTEGER NOT NULL CHECK(progress BETWEEN 0 AND 100), status TEXT NOT NULL CHECK(status IN ('planned','active','blocked','done')), due_date TEXT NOT NULL, version INTEGER NOT NULL DEFAULT 1, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP);
+CREATE TABLE users (id TEXT PRIMARY KEY, organization_id TEXT NOT NULL REFERENCES organizations(id), email TEXT NOT NULL UNIQUE, password_hash TEXT NOT NULL, name TEXT NOT NULL);
+CREATE TABLE sessions (token_hash TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE, expires_at INTEGER NOT NULL);
+CREATE INDEX sessions_expiry ON sessions(expires_at);
+CREATE TABLE login_attempts (key TEXT PRIMARY KEY, attempts INTEGER NOT NULL, reset_at INTEGER NOT NULL);
+CREATE TABLE audit_log (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT NOT NULL REFERENCES users(id), entity_type TEXT NOT NULL, entity_id TEXT NOT NULL, version INTEGER NOT NULL, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP);
+CREATE INDEX departments_org ON departments(organization_id);
+CREATE INDEX goals_department ON goals(department_id);
+CREATE INDEX kpis_goal ON kpis(goal_id);
+CREATE INDEX initiatives_goal ON initiatives(goal_id);

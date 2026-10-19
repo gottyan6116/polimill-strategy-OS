@@ -1,0 +1,33 @@
+name: Verify MVP
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run db:migrate:local
+      - run: npm run admin:local
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Test built Worker
+        env:
+          TEST_BASE_URL: http://127.0.0.1:8787
+        run: |
+          npm run start -- --port 8787 > /tmp/polimill-worker.log 2>&1 &
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://127.0.0.1:8787/login > /dev/null; then break; fi
+            sleep 1
+          done
+          npm run test:e2e

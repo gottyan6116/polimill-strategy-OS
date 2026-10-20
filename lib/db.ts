@@ -1,3 +1,4 @@
+import { getManagement } from './management-db';
 import { env } from "cloudflare:workers";
 import type { Workspace, Department, Goal, Kpi, Initiative } from "./model";
 export const db = () => env.DB;
@@ -10,7 +11,7 @@ export type User = {
 export async function getWorkspace(user: User): Promise<Workspace> {
   const sql = db();
   const org = user.organization_id;
-  const [organization, departments, goals, kpis, initiatives, history] =
+  const [organization, departments, goals, kpis, initiatives, history, management] =
     await Promise.all([
       sql
         .prepare("SELECT id,name FROM organizations WHERE id=?")
@@ -46,10 +47,12 @@ export async function getWorkspace(user: User): Promise<Workspace> {
         )
         .bind(org)
         .all<{ kpi_id: string; month: string; value: number }>(),
+      getManagement(user),
     ]);
   if (!organization) throw new Error("Organization missing");
   return {
     organization,
+    management,
     user: { name: user.name, email: user.email },
     departments: departments.results,
     goals: goals.results,

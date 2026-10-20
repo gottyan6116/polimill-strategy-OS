@@ -1,3 +1,4 @@
+import { getManagement } from './management-db';
 import { db, type User } from "./db";
 import type { BusinessUnit, FinanceRecord, FinanceWorkspace } from "./finance";
 import type { FinanceMonth, Invoice, Settlement } from "./operations";
@@ -29,7 +30,9 @@ export async function getFinance(user: User): Promise<FinanceWorkspace> {
       )
       .bind(user.organization_id),
   ]);
+  const management = await getManagement(user);
   return {
+    management,
     units: units.results as BusinessUnit[],
     records: records.results as FinanceRecord[],
     months: months.results as FinanceMonth[],

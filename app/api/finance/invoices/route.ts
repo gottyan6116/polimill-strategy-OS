@@ -64,7 +64,7 @@ export async function POST(request: Request) {
   await db().batch([
     db()
       .prepare(
-        "INSERT INTO finance_invoices(id,finance_period_id,kind,counterparty,issued_on,due_on,amount) VALUES (?,?,?,?,?,?,?)",
+        "INSERT INTO finance_invoices(id,finance_period_id,kind,counterparty,issued_on,due_on,amount,owner) VALUES (?,?,?,?,?,?,?,?)",
       )
       .bind(
         invoiceId,
@@ -74,6 +74,7 @@ export async function POST(request: Request) {
         fields.issued_on,
         fields.due_on,
         fields.amount,
+        fields.owner??null,
       ),
     db()
       .prepare(
@@ -127,13 +128,14 @@ export async function PATCH(request: Request) {
     statements.push(
       db()
         .prepare(
-          `UPDATE finance_invoices SET counterparty=?,issued_on=?,due_on=?,amount=?,version=version+1 WHERE id=? AND version=? AND ${scope} RETURNING id`,
+          `UPDATE finance_invoices SET counterparty=?,issued_on=?,due_on=?,amount=?,owner=?,version=version+1 WHERE id=? AND version=? AND ${scope} RETURNING id`,
         )
         .bind(
           fields.counterparty,
           fields.issued_on,
           fields.due_on,
           fields.amount,
+          fields.owner===undefined?(original.owner??null):fields.owner,
           original.id,
           original.version,
           user.organization_id,

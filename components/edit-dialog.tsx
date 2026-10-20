@@ -201,19 +201,8 @@ export default function EditDialog({
                 defaultValue={item.record.owner}
               />
             </label>
+            <p className="muted small">進捗はマイルストーンの予定日・完了日から計算します。この画面では自己申告の進捗を入力しません。</p>
             <div className="form-pair">
-              <label>
-                進捗（%）
-                <input
-                  name="progress"
-                  type="number"
-                  min="0"
-                  max="100"
-                  step="1"
-                  required
-                  defaultValue={item.record.progress}
-                />
-              </label>
               <label>
                 ステータス
                 <select name="status" defaultValue={item.record.status}>

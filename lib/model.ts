@@ -1,3 +1,4 @@
+import type { ManagementWorkspace } from './management';
 export type Department = {
   id: string;
   name: string;
@@ -11,6 +12,7 @@ export type Goal = {
   hypothesis: string;
   owner: string;
   version: number;
+  updated_at?: string;
 };
 export type Kpi = {
   id: string;
@@ -21,6 +23,7 @@ export type Kpi = {
   unit: string;
   direction: "up" | "down";
   version: number;
+  updated_at?: string;
 };
 export type Initiative = {
   id: string;
@@ -31,8 +34,10 @@ export type Initiative = {
   status: "planned" | "active" | "blocked" | "done";
   due_date: string;
   version: number;
+  updated_at?: string;
 };
 export type Workspace = {
+  management?: ManagementWorkspace;
   organization: { id: string; name: string };
   user: { name: string; email: string };
   departments: Department[];

@@ -1,3 +1,6 @@
+import { financialDefinitions } from "@/config/metrics";
+import { presentation } from "@/config/presentation";
+import { niceAxis, axisDigits, profitBar } from "@/lib/presentation";
 import type {
   BusinessUnit,
   FinanceRecord,
@@ -22,12 +25,11 @@ export function PortfolioView({
     (r) => r.metrics.revenueGrowth !== null && r.metrics.roic !== null,
   );
   const maxRevenue = Math.max(1, ...rows.map((r) => r.metrics.revenue));
-  const xlo = Math.min(-5, ...plotted.map((r) => r.metrics.revenueGrowth!)) - 5,
-    xhi = Math.max(20, ...plotted.map((r) => r.metrics.revenueGrowth!)) + 10;
-  const ylo = Math.min(0, ...plotted.map((r) => r.metrics.roic!)) - 8,
-    yhi = Math.max(15, ...plotted.map((r) => r.metrics.roic!)) + 12;
-  const x = (v: number) => 70 + ((v - xlo) / (xhi - xlo)) * 650,
-    y = (v: number) => 300 - ((v - ylo) / (yhi - ylo)) * 260;
+  const reference = presentation.portfolio;
+  const xa = niceAxis([...plotted.map(r=>r.metrics.revenueGrowth!),reference.growthReferencePercent],{padding:.2});
+  const ya = niceAxis([...plotted.map(r=>r.metrics.roic!),reference.targetRoicPercent],{padding:.3});
+  const x = (v:number)=>90+(v-xa.min)/(xa.max-xa.min)*620,
+    y = (v:number)=>290-(v-ya.min)/(ya.max-ya.min)*240;
   const sum = rows.reduce((n, r) => n + r.metrics.revenue, 0);
   return (
     <>
@@ -42,66 +44,32 @@ export function PortfolioView({
           role="group"
           aria-label="事業別の売上成長率とROICのバブルチャート"
         >
-          {[0, 0.25, 0.5, 0.75, 1].map((t) => (
-            <g key={t}>
-              <line
-                x1="70"
-                x2="720"
-                y1={40 + 260 * t}
-                y2={40 + 260 * t}
-                stroke="#e5edf3"
-              />
-              <line
-                x1={70 + 650 * t}
-                x2={70 + 650 * t}
-                y1="40"
-                y2="300"
-                stroke="#edf2f6"
-              />
-              <text
-                x="58"
-                y={44 + 260 * t}
-                textAnchor="end"
-                fill="#718297"
-                fontSize="11"
-              >
-                {number(yhi - (yhi - ylo) * t, 0)}%
-              </text>
-              <text
-                x={70 + 650 * t}
-                y="321"
-                textAnchor="middle"
-                fill="#718297"
-                fontSize="11"
-              >
-                {number(xlo + (xhi - xlo) * t, 0)}%
-              </text>
-            </g>
-          ))}
+          {ya.ticks.map(v=><g key={v}><line x1="90" x2="710" y1={y(v)} y2={y(v)} stroke={v===0?presentation.chart.axis:presentation.chart.grid}/><text x="78" y={y(v)+4} textAnchor="end" fill={presentation.chart.text} fontSize="11">{number(v,axisDigits(ya.step))}%</text></g>)}
+          {xa.ticks.map(v=><g key={v}><line x1={x(v)} x2={x(v)} y1="50" y2="290" stroke={v===0?presentation.chart.axis:presentation.chart.grid}/><text x={x(v)} y="311" textAnchor="middle" fill={presentation.chart.text} fontSize="11">{number(v,axisDigits(xa.step))}%</text></g>)}
           <line
-            x1={x(0)}
-            x2={x(0)}
+            x1={x(reference.growthReferencePercent)}
+            x2={x(reference.growthReferencePercent)}
             y1="40"
             y2="300"
-            stroke="#a7b9c9"
+            stroke={presentation.chart.axis}
             strokeDasharray="4 4"
           />
           <line
             x1="70"
             x2="720"
-            y1={y(0)}
-            y2={y(0)}
-            stroke="#a7b9c9"
+            y1={y(reference.targetRoicPercent)}
+            y2={y(reference.targetRoicPercent)}
+            stroke={presentation.chart.axis}
             strokeDasharray="4 4"
           />
-          <text x="70" y="20" fill="#536b80" fontSize="12">
+          <text x="70" y="20" fill={presentation.chart.text} fontSize="12">
             ROIC
           </text>
           <text
             x="400"
             y="350"
             textAnchor="middle"
-            fill="#536b80"
+            fill={presentation.chart.text}
             fontSize="12"
           >
             売上高成長率（前年度比）
@@ -128,17 +96,19 @@ export function PortfolioView({
               <circle
                 cx={x(m.revenueGrowth!)}
                 cy={y(m.roic!)}
-                r={Math.sqrt(m.revenue / maxRevenue) * 31}
+                r={Math.sqrt(Math.max(0,m.revenue) / maxRevenue) * 31}
                 fill={unit.color}
                 fillOpacity=".82"
                 stroke="white"
                 strokeWidth="3"
               />
               <text
-                x={x(m.revenueGrowth!)}
-                y={y(m.roic!) - Math.sqrt(m.revenue / maxRevenue) * 31 - 9}
+                x={Math.max(90 + Math.min(300,unit.name.length*6),Math.min(710 - Math.min(300,unit.name.length*6),x(m.revenueGrowth!)))}
+                y={Math.max(62,Math.min(280,y(m.roic!) - Math.sqrt(Math.max(0,m.revenue) / maxRevenue) * 31 - 9))}
                 textAnchor="middle"
-                fill="#304b63"
+                textLength={unit.name.length > 50 ? 600 : undefined}
+                lengthAdjust="spacingAndGlyphs"
+                fill={presentation.chart.text}
                 fontSize="12"
                 fontWeight="600"
               >
@@ -147,6 +117,7 @@ export function PortfolioView({
             </g>
           ))}
         </svg>
+        <p className="finance-note">{reference.growthReferenceLabel} {percent(reference.growthReferencePercent)}{!reference.growthReferenceConfigured&&'（未設定・参考値）'} / {reference.targetRoicLabel} {percent(reference.targetRoicPercent)}{!reference.targetRoicConfigured&&'（未設定・参考値）'}。資本コスト（WACC）を示すものではありません。</p>
         {!plotted.length && (
           <p className="empty">
             比較できる前年度がないため、バブルは表示していません。別の年度を選んでください。
@@ -197,15 +168,12 @@ export function PortfolioView({
                     {money(m.nopat)}
                   </span>
                 </div>
-                <div className="finance-profit-track">
+                <div className={`finance-profit-track ${rows.some(r=>r.metrics.nopat<0)?"is-signed":"is-positive"}`}>
                   <span
                     style={{
-                      width: `${(Math.abs(m.nopat) / Math.max(1, ...rows.map((r) => Math.abs(r.metrics.nopat)))) * 50}%`,
-                      marginLeft:
-                        m.nopat < 0
-                          ? `${50 - (Math.abs(m.nopat) / Math.max(1, ...rows.map((r) => Math.abs(r.metrics.nopat)))) * 50}%`
-                          : "50%",
-                      background: m.nopat < 0 ? "#ca7658" : unit.color,
+                      width: `${profitBar(m.nopat,rows.map(r=>r.metrics.nopat)).width}%`,
+                      marginLeft: `${profitBar(m.nopat,rows.map(r=>r.metrics.nopat)).marginLeft}%`,
+                      background: m.nopat < 0 ? presentation.chart.negative : unit.color,
                     }}
                   />
                 </div>
@@ -294,7 +262,7 @@ export function RoicView({
         <div className="panel-heading">
           <h2>ROICツリー</h2>
           <span className="muted small">
-            ROIC ＝ NOPAT利益率 × 投下資本回転率
+            {financialDefinitions.roicDecomposition}
           </span>
         </div>
         <div className="roic-tree">
@@ -303,20 +271,20 @@ export function RoicView({
               root
               label="ROIC"
               value={percent(m.roic)}
-              note="税引後営業利益 ÷ 平均投下資本"
+              note={financialDefinitions.roic}
             />
           </div>
           <div className="roic-branches">
             <TreeNode
               label="NOPAT利益率"
               value={percent(m.nopatMargin)}
-              note="NOPAT ÷ 売上高"
+              note={financialDefinitions.nopatMargin}
             />
             <span className="roic-operator">×</span>
             <TreeNode
               label="投下資本回転率"
               value={times(m.capitalTurnover)}
-              note="売上高 ÷ 平均投下資本"
+              note={financialDefinitions.capitalTurnover}
             />
           </div>
           <div className="roic-drivers">
@@ -336,7 +304,7 @@ export function RoicView({
               <TreeNode
                 label="平均投下資本"
                 value={`${money(m.averageInvestedCapital)} 百万円`}
-                note="期首投下資本と期末投下資本の平均"
+                note={financialDefinitions.averageInvestedCapital}
               />
               <TreeNode
                 label="期末投下資本"
@@ -367,8 +335,7 @@ export function RoicView({
         </div>
       </section>
       <p className="finance-note">
-        税引後営業利益は「営業利益 − max(営業利益, 0) ×
-        想定税率」の簡便計算です。赤字の税効果は見込まず、投下資本から現預金を除いています。全社は各事業の利益・資本を合算して算出します。
+        {financialDefinitions.nopat}
       </p>
     </>
   );
@@ -398,12 +365,12 @@ export function IndicatorsView({
           series={[
             {
               name: "営業利益率",
-              color: "#1aada5",
+              color: presentation.series[0],
               values: history.map((h) => h.metrics.operatingMargin),
             },
             {
               name: "売上総利益率",
-              color: "#4a86c5",
+              color: presentation.series[1],
               values: history.map((h) => h.metrics.grossMargin),
             },
           ]}
@@ -424,7 +391,7 @@ export function IndicatorsView({
           series={[
             {
               name: "売上高",
-              color: "#4a86c5",
+              color: presentation.series[1],
               type: "bar",
               values: history.map((h) => h.metrics.revenue),
             },
@@ -446,12 +413,12 @@ export function IndicatorsView({
           series={[
             {
               name: "総資産回転率",
-              color: "#4a86c5",
+              color: presentation.series[1],
               values: history.map((h) => h.metrics.assetTurnover),
             },
             {
               name: "投下資本回転率",
-              color: "#1aada5",
+              color: presentation.series[0],
               values: history.map((h) => h.metrics.capitalTurnover),
             },
           ]}
@@ -472,7 +439,7 @@ export function IndicatorsView({
           series={[
             {
               name: "自己資本比率",
-              color: "#1aada5",
+              color: presentation.series[0],
               values: history.map((h) => h.metrics.equityRatio),
             },
           ]}
@@ -551,25 +518,25 @@ export function CashflowView({
             {
               name: "営業CF",
               type: "bar",
-              color: "#1aada5",
+              color: presentation.series[0],
               values: history.map((h) => h.metrics.operatingCf),
             },
             {
               name: "投資CF",
               type: "bar",
-              color: "#d8934a",
+              color: presentation.series[2],
               values: history.map((h) => h.metrics.investingCf),
             },
             {
               name: "財務CF",
               type: "bar",
-              color: "#4a86c5",
+              color: presentation.series[1],
               values: history.map((h) => h.metrics.financingCf),
             },
             {
               name: "フリーCF",
               type: "line",
-              color: "#173952",
+              color: presentation.series[3],
               values: history.map((h) => h.metrics.freeCashFlow),
             },
           ]}
@@ -610,8 +577,7 @@ export function CashflowView({
         </div>
       </section>
       <p className="finance-note">
-        フリーCF ＝ 営業CF ＋
-        投資CF。この試算では為替換算差額を見込まず、営業・投資・財務CFの合計を現預金の増減としています。
+        {financialDefinitions.freeCashFlow}
       </p>
     </>
   );

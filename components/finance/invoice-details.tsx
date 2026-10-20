@@ -66,6 +66,7 @@ function InvoiceEditor({
     const form = new FormData(e.currentTarget);
     const fields = {
       counterparty: String(form.get("counterparty")),
+      owner:form.get('owner')?String(form.get('owner')):null,
       issued_on: String(form.get("issued_on")),
       due_on: form.get("due_on") ? String(form.get("due_on")) : null,
       amount: Number(form.get("amount")),
@@ -130,6 +131,7 @@ function InvoiceEditor({
             </select>
           </label>
         )}
+        <label>責任者<input aria-label="請求の責任者" name="owner" maxLength={200} defaultValue={record?.owner??''} placeholder="未設定"/></label>
         <label>
           取引先
           <input
@@ -381,6 +383,7 @@ export default function InvoiceDetails({
   initialFilter = "open",
   onClose,
   onSaved,
+  initialQuery='',
 }: {
   kind: Invoice["kind"];
   data: FinanceWorkspace;
@@ -389,10 +392,11 @@ export default function InvoiceDetails({
   initialFilter?: InvoiceFilter;
   onClose: () => void;
   onSaved: () => Promise<void>;
+  initialQuery?:string;
 }) {
   const ref = useRef<HTMLDialogElement>(null),
     [filter, setFilter] = useState<InvoiceFilter>(initialFilter),
-    [query, setQuery] = useState(""),
+    [query, setQuery] = useState(initialQuery),
     [editor, setEditor] = useState<{ record: Invoice | null } | null>(null),
     [settling, setSettling] = useState<Invoice | null>(null);
   useEffect(() => {
@@ -415,7 +419,7 @@ export default function InvoiceDetails({
           ? status !== "unissued" && status !== "settled"
           : status === filter)
       );
-    });
+    }).sort((a,b)=>Number(invoiceStatus(b,data.settlements,asOf)==='overdue')-Number(invoiceStatus(a,data.settlements,asOf)==='overdue')||(a.due_on??'9999').localeCompare(b.due_on??'9999'));
   return (
     <>
       <dialog
@@ -489,9 +493,10 @@ export default function InvoiceDetails({
                     (p) => p.id === i.finance_period_id,
                   )!;
                 return (
-                  <tr key={i.id}>
+                  <tr key={i.id} className={status==='overdue'?'invoice-overdue':''}>
                     <td>
                       <strong>{i.counterparty}</strong>
+                      <small>責任者：{i.owner??'未設定'}</small>
                       <small>
                         {
                           data.units.find(

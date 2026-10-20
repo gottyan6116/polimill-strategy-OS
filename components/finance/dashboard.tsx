@@ -11,7 +11,9 @@ import {
 import { money, percent } from "./format";
 import { PortfolioView, RoicView, IndicatorsView, CashflowView } from "./views";
 import FinanceEditor from "./editor";
+import {financialDefinitions} from '@/config/metrics';
 import OperationsOverview from "./operations";
+import {presentation} from '@/config/presentation';
 const tabs = [
   { id: "operations", name: "損益・入出金" },
   { id: "portfolio", name: "ポートフォリオ" },
@@ -19,13 +21,13 @@ const tabs = [
   { id: "indicators", name: "財務指標" },
   { id: "cashflow", name: "キャッシュフロー" },
 ] as const;
-export default function FinancialDashboard() {
+export default function FinancialDashboard({initialView='portfolio',initialYear=2026,initialUnitId='all',initialInvoiceId}:{initialView?:string;initialYear?:number;initialUnitId?:string;initialInvoiceId?:string}) {
   const [data, setData] = useState<FinanceWorkspace | null>(null),
     [error, setError] = useState(""),
     [busy, setBusy] = useState(true),
-    [year, setYear] = useState(2026),
-    [unitId, setUnitId] = useState("all"),
-    [view, setView] = useState("portfolio"),
+    [year, setYear] = useState(initialYear),
+    [unitId, setUnitId] = useState(initialUnitId),
+    [view, setView] = useState(initialView),
     [editing, setEditing] = useState<FinanceRecord | null>(null),
     [notice, setNotice] = useState("");
   const load = useCallback(async () => {
@@ -38,7 +40,8 @@ export default function FinancialDashboard() {
         return;
       }
       if (!response.ok) throw Error("財務データを読み込めませんでした。");
-      setData((await response.json()) as FinanceWorkspace);
+      const result=(await response.json()) as FinanceWorkspace;
+      setData({...result,units:result.units.map((u,i)=>({...u,color:presentation.business[i%presentation.business.length]}))});
     } catch (e) {
       setError(e instanceof Error ? e.message : "接続を確認してください。");
     } finally {
@@ -222,6 +225,7 @@ export default function FinancialDashboard() {
           <OperationsOverview
             data={data}
             periods={selected}
+            initialInvoiceId={initialInvoiceId}
             onSaved={async () => {
               await load();
               setNotice("月次・入出金データを保存しました。");
@@ -274,18 +278,7 @@ export default function FinancialDashboard() {
       </section>
       <details className="finance-definitions">
         <summary>指標の定義と試算の前提</summary>
-        <p>
-          金額単位は百万円、全数値は架空です。全社指標は事業の分子・分母を合算し、事業間取引の消去は見込んでいません。会計基準に準拠した連結財務諸表ではありません。
-        </p>
-        <p>
-          ROIC ＝ NOPAT ÷ 期首・期末平均投下資本。投下資本 ＝ 売上債権 ＋
-          棚卸資産 − 仕入債務 ＋ 営業固定資産（現預金を除外）。総資産 ＝ 現預金
-          ＋ 売上債権 ＋ 棚卸資産 ＋ 固定資産。自己資本 ＝ 総資産 − 仕入債務 −
-          短期借入金 − 長期借入金。
-        </p>
-        <p>
-          成長率は同じ事業構成の前年度と比較します。前年度がない場合や分母が0以下の指標は「—」です。過年度の変更は後続年度の期首現預金・総資産・投下資本に引き継ぎます。年度ごとの損益・CFの仮説は据え置きます。
-        </p>
+        <p>{financialDefinitions.scope}</p><p>{financialDefinitions.capital}</p><p>{financialDefinitions.comparison}</p>
       </details>
       {editing && (
         <FinanceEditor

@@ -171,7 +171,7 @@ test("four financial views, scoped validation, historical carry-forward and pers
   await page.getByRole("button", { name: "財務分析", exact: true }).click();
   await page.getByLabel("財務分析の事業").selectOption(first.business_unit_id);
   await expect(page.locator(".finance-metrics")).toContainText(
-    (current.revenue + 1).toFixed(1),
+    (current.revenue + 1).toLocaleString("ja-JP", {maximumFractionDigits:0}),
   );
   const finalData = (await (
     await page.request.get("/api/finance")

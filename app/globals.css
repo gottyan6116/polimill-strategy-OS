@@ -1,14 +1,7 @@
 @import "tailwindcss";
+@import "./design-tokens.css";
 :root {
-  --navy: #102541;
-  --navy-deep: #0a1b31;
-  --teal: #22b7af;
-  --ink: #172b49;
-  --muted: #718097;
-  --border: #e6ecf2;
-  --surface: #fff;
-  --bg: #f3f7fa;
-  font-family: Inter, "Noto Sans JP", "Yu Gothic UI", Meiryo, sans-serif;
+  font-family: var(--font-data);
   color: var(--ink);
   background: var(--bg);
   font-synthesis: none;

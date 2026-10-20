@@ -1,3 +1,4 @@
+import type { ManagementWorkspace } from './management';
 import { z } from "zod";
 import type { FinanceMonth, Invoice, Settlement } from "./operations";
 const nonnegative = z.number().finite().min(0).max(1e9);
@@ -36,9 +37,11 @@ export type FinanceRecord = FinanceFields & {
   business_unit_id: string;
   fiscal_year: number;
   version: number;
+  updated_at?: string;
 };
 export type BusinessUnit = { id: string; name: string; color: string };
 export type FinanceWorkspace = {
+  management?: ManagementWorkspace;
   units: BusinessUnit[];
   records: FinanceRecord[];
   months: FinanceMonth[];

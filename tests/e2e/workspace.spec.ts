@@ -20,122 +20,105 @@ test("authentication, drilldown, validated edits, persistence and logout", async
   expect(csrf.status()).toBe(403);
   await page.goto("/dashboard");
   await expect(page).toHaveURL(/\/login/);
-  await page
-    .getByLabel("メールアドレス", { exact: true })
-    .fill(account().email);
+  await page.getByLabel("メールアドレス", { exact: true }).fill(account().email);
   await page.getByLabel("パスワード", { exact: true }).fill("incorrect");
   await page.getByRole("button", { name: "ログイン", exact: true }).click();
   await expect(page.getByRole("alert")).toContainText("正しくありません");
   await page.getByLabel("パスワード", { exact: true }).fill(account().password);
   await page.getByRole("button", { name: "ログイン", exact: true }).click();
-  await expect(
-    page.getByRole("heading", { name: "経営ダッシュボード" }),
-  ).toBeVisible();
-  const snapshot = await page.request.get("/api/workspace");
-  const data = await snapshot.json();
+  await expect(page.getByRole("heading", { name: "経営サマリー", exact: true })).toBeVisible();
+  const data = await (await page.request.get("/api/workspace")).json();
   const kpi = data.kpis[0];
+  const goal = data.goals.find((g: { id: string }) => g.id === kpi.goal_id);
+  const department = data.departments.find((d: { id: string }) => d.id === goal.department_id);
   const payload = {
-    kind: "kpis",
-    id: kpi.id,
-    version: kpi.version,
-    name: kpi.name,
-    actual: kpi.actual,
-    target: 0,
-    unit: kpi.unit,
-    direction: kpi.direction,
+    kind: "kpis", id: kpi.id, version: kpi.version, name: kpi.name,
+    actual: kpi.actual, target: 0, unit: kpi.unit, direction: kpi.direction,
   };
-  expect(
-    (
-      await page.request.patch("/api/records", {
-        data: payload,
-        headers: { Origin: baseURL! },
-      })
-    ).status(),
-  ).toBe(400);
-  const otherOrg = { ...payload, id: "missing-other-org", target: 100 };
-  expect(
-    (
-      await page.request.patch("/api/records", {
-        data: otherOrg,
-        headers: { Origin: baseURL! },
-      })
-    ).status(),
-  ).toBe(409);
-  await page.getByRole("button", { name: "事業開発部門", exact: true }).click();
-  await expect(
-    page.getByRole("heading", { name: "事業開発部門の目標" }),
-  ).toBeVisible();
-  await expect(
-    page.getByText("自治体との共創を広げる", { exact: true }),
-  ).toBeVisible();
-  await page
-    .getByRole("button", { name: "プロダクト部門", exact: true })
-    .click();
-  await page
-    .getByRole("button", { name: `${kpi.name}を編集`, exact: true })
-    .click();
+  expect((await page.request.patch("/api/records", {
+    data: payload, headers: { Origin: baseURL! },
+  })).status()).toBe(400);
+  expect((await page.request.patch("/api/records", {
+    data: { ...payload, id: "missing-other-org", target: 100 },
+    headers: { Origin: baseURL! },
+  })).status()).toBe(409);
+
+  const navigation = page.getByRole("navigation", { name: "メインナビゲーション" });
+  await navigation.getByRole("button", { name: "KPI", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "KPI一覧", exact: true })).toBeVisible();
+  await page.getByRole("button", { name: `${kpi.name}の詳細`, exact: true }).click();
+  await expect(page.getByRole("dialog")).toContainText("対象月計画");
+  await page.getByRole("button", { name: "KPIを編集", exact: true }).click();
   await page.getByLabel("現在値", { exact: true }).fill(String(kpi.actual + 1));
   await page.getByRole("button", { name: "変更を保存", exact: true }).click();
   await expect(page.getByRole("dialog")).not.toBeVisible();
   await expect(page.getByRole("status")).toContainText("保存しました");
   await page.reload();
-  await expect(page.locator(".kpi-number").first()).toContainText(
-    (kpi.actual + 1).toLocaleString(),
-  );
-  expect(
-    (
-      await page.request.patch("/api/records", {
-        data: { ...payload, target: kpi.target },
-        headers: { Origin: baseURL! },
-      })
-    ).status(),
-  ).toBe(409);
+  await navigation.getByRole("button", { name: "KPI", exact: true }).click();
+  await page.getByRole("button", { name: `${kpi.name}の詳細`, exact: true }).click();
+  await page.getByRole("button", { name: "KPIを編集", exact: true }).click();
+  await expect(page.getByLabel("現在値", { exact: true })).toHaveValue(String(kpi.actual + 1));
+  await page.getByRole("button", { name: "キャンセル", exact: true }).click();
+  expect((await page.request.patch("/api/records", {
+    data: { ...payload, target: kpi.target }, headers: { Origin: baseURL! },
+  })).status()).toBe(409);
   const fresh = await (await page.request.get("/api/workspace")).json();
   const updated = fresh.kpis.find((k: { id: string }) => k.id === kpi.id);
-  expect(
-    (
-      await page.request.patch("/api/records", {
-        data: { ...payload, target: kpi.target, version: updated.version },
-        headers: { Origin: baseURL! },
-      })
-    ).status(),
-  ).toBe(200);
-  await page.getByRole("button", { name: "目標を編集", exact: true }).click();
-  await page
-    .getByRole("textbox", { name: "仮説", exact: true })
-    .fill(data.goals[0].hypothesis + " 検証中。");
+  expect((await page.request.patch("/api/records", {
+    data: { ...payload, target: kpi.target, version: updated.version },
+    headers: { Origin: baseURL! },
+  })).status()).toBe(200);
+
+  const openGoal = async () => {
+    await navigation.getByRole("button", { name: "組織・部門目標", exact: true }).click();
+    await page.getByRole("button", { name: `${department.name}の詳細`, exact: true }).click();
+    const section = page.locator(".department-goal").filter({
+      has: page.getByRole("heading", { name: goal.title, exact: true }),
+    });
+    await section.getByRole("button", { name: "目標を編集", exact: true }).click();
+  };
+  await openGoal();
+  await page.getByRole("textbox", { name: "仮説", exact: true }).fill(goal.hypothesis + " 検証中。");
   await page.getByRole("button", { name: "変更を保存", exact: true }).click();
   await expect(page.getByRole("dialog")).not.toBeVisible();
-  await expect(page.locator(".hypothesis-detail")).toContainText("検証中。");
-  await page.getByRole("button", { name: "目標を編集", exact: true }).click();
-  await page
-    .getByRole("textbox", { name: "仮説", exact: true })
-    .fill(data.goals[0].hypothesis);
+  await page.reload();
+  await openGoal();
+  await expect(page.getByRole("textbox", { name: "仮説", exact: true })).toHaveValue(goal.hypothesis + " 検証中。");
+  await page.getByRole("textbox", { name: "仮説", exact: true }).fill(goal.hypothesis);
   await page.getByRole("button", { name: "変更を保存", exact: true }).click();
   await expect(page.getByRole("dialog")).not.toBeVisible();
-  const initiative = data.initiatives.find(
-    (i: { goal_id: string }) => i.goal_id === data.goals[0].id,
-  );
-  await page
-    .getByRole("button", { name: `${initiative.title}を編集`, exact: true })
-    .click();
-  await page.getByLabel("進捗（%）").fill("77");
+
+  const initiative = data.initiatives[0];
+  const openInitiative = async () => {
+    await navigation.getByRole("button", { name: "実行施策", exact: true }).click();
+    await page.getByRole("button", { name: `${initiative.title}の詳細`, exact: true }).click();
+  };
+  await openInitiative();
+  await expect(page.getByRole("dialog")).toContainText("旧自己申告進捗");
+  await page.getByRole("button", { name: "マイルストーンを追加", exact: true }).click();
+  const milestoneForm = page.getByRole("form", { name: "マイルストーンを追加" });
+  await expect(milestoneForm.getByLabel("完了日（未完了なら空欄）")).toHaveValue("");
+  await milestoneForm.getByRole("button", { name: "キャンセル", exact: true }).click();
+  await page.getByRole("button", { name: "施策を編集", exact: true }).click();
+  await expect(page.getByLabel("進捗（%）", { exact: true })).toHaveCount(0);
+  await page.getByLabel("担当", { exact: true }).fill(initiative.owner + " 検証中");
   await page.getByRole("button", { name: "変更を保存", exact: true }).click();
   await expect(page.getByRole("dialog")).not.toBeVisible();
-  await expect(
-    page.getByRole("row").filter({ hasText: initiative.title }),
-  ).toContainText("77%");
-  await page
-    .getByRole("button", { name: `${initiative.title}を編集`, exact: true })
-    .click();
-  await page.getByLabel("進捗（%）").fill(String(initiative.progress));
+  await page.reload();
+  await openInitiative();
+  await expect(page.getByRole("dialog")).toContainText(initiative.owner + " 検証中");
+  await page.getByRole("button", { name: "施策を編集", exact: true }).click();
+  await page.getByLabel("担当", { exact: true }).fill(initiative.owner);
   await page.getByRole("button", { name: "変更を保存", exact: true }).click();
   await expect(page.getByRole("dialog")).not.toBeVisible();
-  await page.getByLabel("組織・目標・KPI・施策を検索").fill("自治体");
-  await page.locator(".search-results button").first().click();
-  await expect(
-    page.getByRole("heading", { name: "事業開発部門の目標" }),
-  ).toBeVisible();
+  const restored = await (await page.request.get("/api/workspace")).json();
+  expect(restored.kpis.find((k: { id: string }) => k.id === kpi.id).actual).toBe(kpi.actual);
+  expect(restored.goals.find((g: { id: string }) => g.id === goal.id).hypothesis).toBe(goal.hypothesis);
+  expect(restored.initiatives.find((i: { id: string }) => i.id === initiative.id).owner).toBe(initiative.owner);
+  await page.getByLabel("組織・目標・KPI・施策を検索").fill(department.name);
+  await page.locator(".search-results").getByRole("button", { name: department.name, exact: true }).click();
+  await expect(page.getByRole("dialog").getByRole("heading", { name: department.name, exact: true })).toBeVisible();
+  await page.getByRole("dialog").getByRole("button", { name: "閉じる", exact: true }).click();
   await page.getByRole("button", { name: "ログアウト", exact: true }).click();
   await expect(page).toHaveURL(/\/login/);
   expect((await page.request.get("/api/workspace")).status()).toBe(401);
@@ -158,7 +141,7 @@ test("mobile login and layout do not overflow", async ({ page }) => {
   await page.getByLabel("パスワード", { exact: true }).fill(account().password);
   await page.getByRole("button", { name: "ログイン", exact: true }).click();
   await expect(
-    page.getByRole("heading", { name: "経営ダッシュボード" }),
+    page.getByRole("heading", { name: "経営サマリー", exact: true }),
   ).toBeVisible();
   expect(
     await page.evaluate(

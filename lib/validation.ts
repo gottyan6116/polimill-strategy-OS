@@ -38,12 +38,9 @@ export const editSchema = z.discriminatedUnion("kind", [
       kind: z.literal("initiatives"),
       title: text,
       owner: text,
-      progress: z.number().int().min(0).max(100),
+      progress: z.number().int().min(0).max(100).optional(),
       status: z.enum(["planned", "active", "blocked", "done"]),
       due_date: z.iso.date(),
     })
-    .strict()
-    .refine((x) => x.status !== "done" || x.progress === 100, {
-      message: "完了の場合は進捗を100%にしてください。",
-    }),
+    .strict(),
 ]);

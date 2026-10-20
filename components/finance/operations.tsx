@@ -17,26 +17,31 @@ import { MonthBars, ExpenseDonut } from "./operations-charts";
 import MonthDetails from "./month-details";
 import InvoiceDetails, { type InvoiceFilter } from "./invoice-details";
 import { preciseMoney as money } from "./format";
+import {presentation} from '@/config/presentation';
+import {managementConfig} from '@/config/management';
 const statuses = [
-  { key: "undated", label: "期日未設定", color: "#dfb54d" },
-  { key: "overdue", label: "期限超過", color: "#d57b80" },
-  { key: "upcoming", label: "期日前・当日", color: "#4a86c5" },
+  { key: "overdue", label: "期限超過", color: presentation.chart.negative },
+  { key: "undated", label: "期日未設定", color: presentation.chart.budget },
+  { key: "upcoming", label: "期日前・当日", color: presentation.chart.forecast },
 ] as const;
 export default function OperationsOverview({
   data,
   periods,
   onSaved,
+  initialInvoiceId,
 }: {
   data: FinanceWorkspace;
   periods: FinanceRecord[];
   onSaved: () => Promise<void>;
+  initialInvoiceId?:string;
 }) {
   const [asOf, setAsOf] = useState(japanDate),
+    [cumulative,setCumulative]=useState(false),
     [monthsOpen, setMonthsOpen] = useState(false),
     [details, setDetails] = useState<{
       kind: Invoice["kind"];
       filter: InvoiceFilter;
-    } | null>(null);
+    } | null>(()=>{const invoice=data.invoices.find(i=>i.id===initialInvoiceId);return invoice?{kind:invoice.kind,filter:'all'}:null});
   const ids = new Set(periods.map((p) => p.id)),
     rows = data.months.filter((m) => ids.has(m.finance_period_id)),
     invoices = data.invoices.filter((i) => ids.has(i.finance_period_id)),
@@ -61,6 +66,18 @@ export default function OperationsOverview({
     periods.every(
       (p) => rows.filter((r) => r.finance_period_id === p.id).length === 12,
     );
+  const observations=data.management?.values??[];
+  function monthlySeries(profit=false,scenario:'budget'|'forecast'='forecast'){
+    const fields=profit?keys:['revenue'] as (keyof MonthFields)[];
+    return Array.from({length:12},(_,index)=>{
+      const selected=rows.filter(m=>m.month_index===index);
+      if(selected.length!==periods.length)return null;
+      let total=0;
+      for(const month of selected){let value=0;for(const metric of fields){const p=observations.find(p=>p.entity_type==='finance_month'&&p.entity_id===month.id&&p.metric===metric&&p.scenario===scenario);if(p?.value==null)return null;value+=toYen(p.value)*(profit&&metric!=='revenue'?-1:1)}total+=value;}
+      return fromYen(total);
+    });
+  }
+  function closedMonths(profit=false){const fields=profit?keys:['revenue'] as (keyof MonthFields)[];return Array.from({length:12},(_,index)=>{const months=rows.filter(m=>m.month_index===index);return months.length===periods.length&&months.every(m=>fields.every(metric=>observations.some(p=>p.entity_type==='finance_month'&&p.entity_id===m.id&&p.metric===metric&&p.scenario==='actual'&&p.is_closed)))});}
   if (!ready)
     return (
       <section className="panel finance-loading">
@@ -83,7 +100,7 @@ export default function OperationsOverview({
     );
     const label = kind === "receivable" ? "入金管理" : "支払管理";
     return (
-      <section className="panel ops-invoice-card">
+      <section className={`panel ops-invoice-card ${summary.overdue>managementConfig.overdueWarningMillion?'ops-warning':''}`}>
         <div className="panel-heading">
           <h2>{label}</h2>
           {detailsButton(`${label}の明細を見る`, () =>
@@ -98,6 +115,7 @@ export default function OperationsOverview({
             {money(summary.total)}
             <small>百万円</small>
           </strong>
+          <p className="ops-warning-note">期限超過 <strong className="ops-overdue-amount">{money(summary.overdue)}</strong> 百万円</p>
           <div
             className="ops-stacked-bar"
             role="img"
@@ -149,6 +167,8 @@ export default function OperationsOverview({
           />
         </label>
       </div>
+      <div className="ops-chart-mode" aria-label="月次グラフの集計"><button aria-pressed={!cumulative} onClick={()=>setCumulative(false)}>単月</button><button aria-pressed={cumulative} onClick={()=>setCumulative(true)}>累計</button><span>単位：百万円。濃色＝締め済み実績 / 淡色＝見込み / 点線＝予算</span></div>
+      <p className="ops-unset-note">未締めの月は見込みを表示します。見込み・予算が未設定の月は描画しません。既存の未締め仮実績は、合計と月次明細に保存しています。</p>
       <div className="ops-grid">
         <section className="panel ops-profit">
           <div className="panel-heading">
@@ -165,7 +185,7 @@ export default function OperationsOverview({
               {money(totals.operatingProfit)}
               <small>百万円</small>
             </strong>
-            <MonthBars rows={byMonth} profit />
+            <MonthBars rows={byMonth} profit closed={closedMonths(true)} forecast={monthlySeries(true)} budget={monthlySeries(true,'budget')} cumulative={cumulative}/>
           </div>
         </section>
         <section className="panel ops-revenue">
@@ -179,7 +199,7 @@ export default function OperationsOverview({
               {money(totals.revenue)}
               <small>百万円</small>
             </strong>
-            <MonthBars rows={byMonth} />
+            <MonthBars rows={byMonth} closed={closedMonths()} forecast={monthlySeries()} budget={monthlySeries(false,'budget')} cumulative={cumulative}/>
           </div>
         </section>
         <div className="ops-payments">
@@ -221,6 +241,7 @@ export default function OperationsOverview({
           periods={periods}
           onClose={() => setDetails(null)}
           onSaved={onSaved}
+          initialQuery={data.invoices.find(i=>i.id===initialInvoiceId)?.counterparty}
         />
       )}
     </div>

@@ -17,6 +17,16 @@ export async function PATCH(request: Request) {
       400,
     );
   const { kind, id, version, ...fields } = parsed.data;
+  if(kind==='initiatives'){
+    const original=await db().prepare('SELECT i.progress,i.status FROM initiatives i JOIN goals g ON g.id=i.goal_id JOIN departments d ON d.id=g.department_id WHERE i.id=? AND d.organization_id=?').bind(id,user.organization_id).first<{progress:number;status:string}>();
+    if(!original)return json({error:'対象の施策が見つかりません。'},409);
+    if('progress' in fields&&fields.progress!==undefined&&fields.progress!==original.progress)return json({error:'進捗はマイルストーンの完了から計算します。'},400);
+    delete (fields as {progress?:number}).progress;
+    if('status' in fields&&fields.status==='done'&&original.status!=='done'){
+      const counts=await db().prepare('SELECT COUNT(*) total,SUM(completed_on IS NOT NULL) completed FROM management_milestones WHERE initiative_id=?').bind(id).first<{total:number;completed:number}>();
+      if(!counts?.total||counts.total!==counts.completed)return json({error:'完了には全マイルストーンの完了日が必要です。'},400);
+    }
+  }
   const columns = Object.keys(fields);
   const values = Object.values(fields);
   const scope =

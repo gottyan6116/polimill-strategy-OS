@@ -1,0 +1,8 @@
+:root{
+ --navy:#102541;--navy-deep:#0a1b31;
+ --accent:#177d75;--accent-soft:#eaf3f1;--ink:#263238;--muted:#6b7479;--line:#dce1e3;--surface:#fff;--canvas:#f5f6f6;
+ --danger:#b94c4c;--danger-soft:#fbefef;--positive:#17734d;--attention:#896729;
+ --chart-grid:#e5e7eb;--chart-axis:#899398;--chart-forecast:#a9ceca;--chart-budget:#6b7280;
+ --sidebar-bg:#f0f2f2;--sidebar-ink:#354146;--border:var(--line);--bg:var(--canvas);--teal:var(--accent);
+ --font-data:"IBM Plex Sans JP","Noto Sans JP","Yu Gothic UI",Meiryo,sans-serif;
+}

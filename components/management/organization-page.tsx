@@ -2,6 +2,8 @@
 import {useEffect,useState} from 'react';
 import {List,Network} from 'lucide-react';
 import type {Workspace} from '@/lib/model';
+import type {FinanceWorkspace} from '@/lib/finance';
+import ObservationEditor from './observation-editor';
 import {organizationSummary} from '@/lib/organization-tree';
 import {organizationTree} from '@/config/organization-tree';
 import type {EditRecord} from '../edit-dialog';
@@ -22,9 +24,10 @@ export function OrganizationSummary({data}:{data:Workspace}) {
     ].map(item=><div key={item.label} title={item.note}><dt>{item.label}</dt><dd>{count(item.value)}</dd></div>)}
   </dl>;
 }
-type Props={data:Workspace;onEdit:(item:EditRecord)=>void;onSaved:()=>Promise<void>;onFinance:()=>void;initialDetail?:DetailTarget|null};
-export default function OrganizationGoalPage({data,onEdit,onSaved,onFinance,initialDetail}:Props) {
+type Props={data:Workspace;onEdit:(item:EditRecord)=>void;onSaved:()=>Promise<void>;onFinance:()=>void;initialDetail?:DetailTarget|null;finance?:FinanceWorkspace|null};
+export default function OrganizationGoalPage({data,onEdit,onSaved,onFinance,initialDetail,finance}:Props) {
   const [view,setView]=useState<'tree'|'list'>('tree');
+  const [setup,setSetup]=useState<{id:string;period:string}|null>(null);
   const [detail,setDetail]=useState<DetailTarget|null>(initialDetail??null);
   const [expanded,setExpanded]=useState<Record<string,boolean>>({});
   useEffect(()=>{setDetail(initialDetail??null)},[initialDetail]);
@@ -39,10 +42,11 @@ export default function OrganizationGoalPage({data,onEdit,onSaved,onFinance,init
       {view==='tree'&&<div className="org-tree-controls"><span>部門を選択して目標を確認</span><button onClick={()=>setAll(!allExpanded)}>{allExpanded?'すべて折りたたむ':'すべて展開する'}</button></div>}
     </div>
     <div hidden={view!=='tree'} className="org-tree-view">
-      <StrategyTree data={data} expanded={expanded} onToggle={id=>setExpanded(current=>({...current,[id]:current[id]===false}))} onDetail={setDetail} onList={()=>setView('list')}/>
+      <StrategyTree data={data} expanded={expanded} onToggle={id=>setExpanded(current=>({...current,[id]:current[id]===false}))} onDetail={setDetail} onEdit={onEdit} onSetupKpi={(id,period)=>setSetup({id,period})} onList={()=>setView('list')}/>
       <p className="org-tree-note">仮データを表示しています。全社・部門の進捗は正式な集計ルールが未登録のため未設定です。KPIは対象月の計画と実績から判定し、下位指標の単純平均は行いません。</p>
     </div>
     <div hidden={view!=='list'} className="org-list-view"><EntityPages kind="organization" data={data} onEdit={onEdit} onSaved={onSaved} onFinance={onFinance}/></div>
+    {setup&&finance&&<ObservationEditor data={data} finance={finance} initialKpi={setup} onSaved={onSaved} onClose={()=>setSetup(null)}/>}
     {detail&&<EntityDetail target={detail} data={data} onClose={()=>setDetail(null)} onEdit={onEdit} onSaved={onSaved} onFinance={onFinance} onNavigate={setDetail}/>}
   </section>;
 }

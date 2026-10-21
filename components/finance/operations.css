@@ -11,23 +11,23 @@
 }
 .ops-caption-row > p {
   font-size:var(--type-caption);
-  color: #7d90a1;
+  color: var(--tone--7d90a1);
 }
 .ops-caption-row label {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #6e8295;
+  color:var(--accent-text);
   font-size:var(--type-caption);
   white-space: nowrap;
 }
 .ops-caption-row input {
-  background: white;
-  border: 1px solid #dce6ee;
-  border-radius: 5px;
+  background:var(--surface);
+  border: 1px solid var(--tone--dce6ee);
+  border-radius:var(--radius-sm);
   padding: 6px 9px;
   font-size:var(--type-control);
-  color: #304b63;
+  color: var(--tone--304b63);
 }
 .ops-grid {
   display: grid;
@@ -61,11 +61,11 @@
 }
 .ops-card-caption {
   font-size:var(--type-caption);
-  color: #8a9ba9;
+  color: var(--tone--8a9ba9);
 }
 .ops-card-value {
   display: block;
-  font-size: 25px;
+  font-size:var(--type-metric);
   font-weight: 750;
   font-variant-numeric: tabular-nums;
   line-height: 1.5;
@@ -75,22 +75,22 @@
   font-size:var(--type-caption);
   font-weight: 400;
   margin-left: 6px;
-  color: #8799a8;
+  color: var(--tone--8799a8);
 }
 .ops-detail-button {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  border: 1px solid #e2eaf0;
-  border-radius: 4px;
+  border: 1px solid var(--tone--e2eaf0);
+  border-radius:var(--radius-sm);
   padding: 3px 7px;
   font-size:var(--type-control);
-  color: #60798d;
+  color:var(--accent-text);
   white-space: nowrap;
 }
 .ops-detail-button:hover {
-  background: #eef7f6;
-  color: #178a85;
+  background: var(--tone--eef7f6);
+  color: var(--accent-text);
 }
 .ops-month-chart {
   display: block;
@@ -120,26 +120,26 @@
   display: inline-block;
   width: 8px;
   height: 8px;
-  border-radius: 1px;
+  border-radius:var(--radius-sm);
   flex-shrink: 0;
   margin-top: 4px;
 }
 .ops-expense-legend > div > span {
   font-size:var(--type-caption);
   flex: 1;
-  color: #6f8496;
+  color:var(--accent-text);
   line-height: 1.5;
 }
 .ops-expense-legend strong {
   display: block;
   font-size:var(--type-body);
-  color: #34526a;
+  color: var(--tone--34526a);
   font-weight: 650;
   font-variant-numeric: tabular-nums;
 }
 .ops-expense-legend small {
   font-size:var(--type-caption);
-  color: #8a9ba9;
+  color: var(--tone--8a9ba9);
   font-variant-numeric: tabular-nums;
   margin-top: 4px;
 }
@@ -153,9 +153,9 @@
   display: flex;
   width: 100%;
   height: 12px;
-  background: #eff3f6;
+  background: var(--tone--eff3f6);
   margin: 14px 0 16px;
-  border-radius: 2px;
+  border-radius:var(--radius-sm);
   overflow: hidden;
 }
 .ops-stacked-bar > span {
@@ -174,7 +174,7 @@
   text-align: left;
   padding: 0;
   font-size:var(--type-control);
-  color: #71879a;
+  color:var(--accent-text);
 }
 .ops-balance-legend button:hover {
   text-decoration: underline;
@@ -182,12 +182,12 @@
 .ops-balance-legend strong {
   font-size:var(--type-caption);
   font-weight: 650;
-  color: #31516a;
+  color: var(--tone--31516a);
   font-variant-numeric: tabular-nums;
 }
 .ops-basis {
   font-size:var(--type-caption);
-  color: #9aa8b4;
+  color: var(--tone--9aa8b4);
   margin-top: 18px;
 }
 .ops-payments .panel-heading {
@@ -200,7 +200,7 @@
   font-size:var(--type-section);
 }
 .ops-payments .ops-card-value {
-  font-size: 23px;
+  font-size:var(--type-metric);
 }
 .ops-payments .ops-card-value small {
   font-size:var(--type-caption);
@@ -213,29 +213,29 @@
   width: min(1000px, calc(100% - 30px));
 }
 .ops-detail-dialog .table-scroll {
-  border: 1px solid #e5edf2;
-  border-radius: 7px;
+  border: 1px solid var(--tone--e5edf2);
+  border-radius:var(--radius-sm);
   margin: 15px 0;
 }
 .ops-detail-filter {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #71869a;
+  color:var(--accent-text);
   font-size:var(--type-body);
 }
 .ops-detail-filter select,
 .ops-invoice-toolbar select,
 .ops-invoice-toolbar input {
-  border: 1px solid #dce6ed;
-  border-radius: 5px;
-  background: white;
+  border: 1px solid var(--tone--dce6ed);
+  border-radius:var(--radius-sm);
+  background:var(--surface);
   padding: 8px 10px;
   font-size:var(--type-control);
-  color: #36556d;
+  color: var(--tone--36556d);
 }
 .ops-total-row {
-  background: #f1f8f7;
+  background: var(--tone--f1f8f7);
   font-weight: 700;
 }
 .ops-month-fields {
@@ -252,7 +252,7 @@
   align-items: center;
   gap: 8px;
   font-size:var(--type-control);
-  color: #72879a;
+  color:var(--accent-text);
 }
 .ops-invoice-toolbar > input {
   min-width: 120px;
@@ -275,30 +275,30 @@
 }
 .ops-status {
   display: inline-block;
-  border-radius: 4px;
+  border-radius:var(--radius-sm);
   padding: 2px 6px;
   font-size:var(--type-caption);
   white-space: nowrap;
 }
 .ops-undated {
-  color: #997722;
-  background: #fff6d9;
+  color: var(--tone--997722);
+  background: var(--tone--fff6d9);
 }
 .ops-overdue {
-  color: #b15e65;
-  background: #fff0f1;
+  color: var(--tone--b15e65);
+  background: var(--tone--fff0f1);
 }
 .ops-upcoming {
-  color: #4c7eae;
-  background: #edf4fd;
+  color:var(--accent-text);
+  background: var(--tone--edf4fd);
 }
 .ops-settled,
 .ops-unissued {
-  color: #8394a1;
-  background: #f0f4f7;
+  color: var(--tone--8394a1);
+  background: var(--tone--f0f4f7);
 }
 .ops-settlement-history {
-  border-top: 1px solid #e3ebf2;
+  border-top: 1px solid var(--tone--e3ebf2);
   padding-top: 16px;
   margin-top: 21px;
 }
@@ -312,7 +312,7 @@
   justify-content: space-between;
   align-items: center;
   gap: 12px;
-  border-bottom: 1px solid #edf2f5;
+  border-bottom: 1px solid var(--tone--edf2f5);
   padding: 11px 0;
 }
 .ops-settlement-history strong {
@@ -322,7 +322,7 @@
 .ops-settlement-history small {
   font-size:var(--type-caption);
   display: block;
-  color: #8296a6;
+  color: var(--tone--8296a6);
   margin-top: 4px;
 }
 .ops-settlement-history .finance-note {
@@ -390,7 +390,7 @@
     padding: 12px 14px 14px;
   }
   .ops-card-value {
-    font-size: 24px;
+    font-size:var(--type-metric);
   }
   .ops-card-caption {
     font-size:var(--type-caption);
@@ -429,7 +429,7 @@
     padding: 12px 10px;
   }
   .ops-payments .ops-card-value {
-    font-size: 22px;
+    font-size:var(--type-metric);
   }
   .ops-payments .ops-card-value > small {
     font-size:var(--type-caption);

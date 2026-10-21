@@ -1,4 +1,5 @@
 "use client";
+import {useDialog} from '@/components/use-dialog';
 import { useEffect, useRef, useState } from "react";
 import type { Workspace, Kpi } from "@/lib/model";
 import { statusLabels } from "@/lib/model";
@@ -9,14 +10,15 @@ import { number, percent } from "../finance/format";
 import {latestKpiPeriod} from '@/lib/reporting';
 import {fiscalYearOf} from '@/lib/operations';
 import TrendChart from "../trend-chart";
+import {X} from 'lucide-react';
 import MilestoneEditor from "./milestone-editor";
 export type DetailTarget={kind:"kpi"|"initiative"|"department";id:string;period?:string};
 export const kpiNumber=(value:number|null,kpi:Kpi)=>value===null?"未設定":`${number(value,kpi.unit.includes("%")?1:0)}${kpi.unit}`;
 export const kpiPeriod=(kpi:Kpi,data:Workspace)=>latestKpiPeriod(data,kpi.id);
-export default function EntityDetail({ target,data,onClose,onEdit,onSaved,onFinance,onNavigate }: { target:DetailTarget;data:Workspace;onClose:()=>void;onEdit:(item:EditRecord)=>void;onSaved:()=>Promise<void>;onFinance:()=>void;onNavigate:(target:DetailTarget)=>void }) {
+export default function EntityDetail({ target,data,onClose:finishClose,onEdit,onSaved,onFinance,onNavigate }: { target:DetailTarget;data:Workspace;onClose:()=>void;onEdit:(item:EditRecord)=>void;onSaved:()=>Promise<void>;onFinance:()=>void;onNavigate:(target:DetailTarget)=>void }) {
   const dialog=useRef<HTMLDialogElement>(null);
   const [milestone,setMilestone]=useState<Milestone|"new"|null>(null);
-  useEffect(()=>{dialog.current?.showModal();},[]);
+  const onClose=useDialog(dialog,finishClose);
   useEffect(()=>{setMilestone(null);},[target.id]);
   const kpi=target.kind==="kpi"?data.kpis.find(k=>k.id===target.id):undefined;
   const initiative=target.kind==="initiative"?data.initiatives.find(i=>i.id===target.id):undefined;
@@ -30,9 +32,9 @@ export default function EntityDetail({ target,data,onClose,onEdit,onSaved,onFina
   const periodActual=kpi?data.history.find(h=>h.kpi_id===kpi.id&&h.month===period)?.value??null:null;
   const evaluation=kpi&&config?kpiEvaluation({...kpi,actual:periodActual},config,period):null;
   const rows=(data.management?.milestones??[]).filter(m=>m.initiative_id===initiative?.id).sort((a,b)=>a.planned_on.localeCompare(b.planned_on));
-  const edit=(item:EditRecord)=>{onClose();onEdit(item);};
-  return <dialog ref={dialog} className="entity-detail" onCancel={onClose} aria-labelledby="entity-detail-title">
-    <header><div><p className="management-muted">{target.kind==="kpi"?"KPI詳細":target.kind==="initiative"?"施策詳細":"組織詳細"}</p><h2 id="entity-detail-title">{title}</h2></div><button type="button" onClick={onClose}>閉じる</button></header>
+  const edit=(item:EditRecord)=>{onClose(()=>onEdit(item));};
+  return <dialog ref={dialog} className="dialog entity-detail" onCancel={onClose} aria-labelledby="entity-detail-title">
+    <header><div><h2 id="entity-detail-title">{title}</h2><p className="management-muted">{target.kind==="kpi"?"KPI詳細":target.kind==="initiative"?"施策詳細":"組織詳細"}</p></div><button type="button" aria-label="閉じる" onClick={onClose}><X size={20} aria-hidden="true"/></button></header>
     {goal&&<p className="management-muted">目標：{goal.title} ／ 部門：{data.departments.find(d=>d.id===goal.department_id)?.name??"未設定"}</p>}
     {kpi&&config&&evaluation&&<>
       <div className="management-actions"><button onClick={()=>edit({kind:"kpis",record:kpi})}>KPIを編集</button></div>

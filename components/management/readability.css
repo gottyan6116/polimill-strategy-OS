@@ -3,7 +3,7 @@
 .reporting-shell .sidebar{width:var(--sidebar-width);padding-inline:16px}
 .reporting-shell .main-shell{margin-left:var(--sidebar-width);width:calc(100% - var(--sidebar-width));min-width:0}
 .reporting-shell .dashboard-main{width:100%;max-width:none;padding:28px 24px}
-.reporting-shell .sidebar nav button,.reporting-shell .sidebar-bottom>button{font-size:var(--type-navigation);min-height:46px;padding:12px}
+.reporting-shell .sidebar nav button,.reporting-shell .sidebar-bottom>button{min-height:46px;padding:12px}
 .reporting-shell .workspace-label{letter-spacing:.04em;overflow-wrap:anywhere}
 .reporting-shell .topbar{min-height:72px;height:auto;padding:14px 24px}
 .reporting-shell .search-wrap{width:min(480px,60%);min-width:0}
@@ -47,7 +47,7 @@
 .reporting-shell .org-department-title{padding-right:22px}.reporting-shell .org-department-toggle{right:5px;top:12px}
 .reporting-shell .org-tree-viewport{padding-top:8px}.reporting-shell .org-view-toolbar{margin-bottom:12px}.reporting-shell .org-kpi-list{gap:20px}
 .reporting-shell .org-goal-group{gap:12px}.reporting-shell .org-tree-note{font-size:var(--type-caption)}
-@media(min-width:761px){.reporting-shell .org-strategy-tree{min-width:1100px}}
+@media(min-width:761px){}
 @media(max-width:1500px){.reporting-shell .finance-two-col,.reporting-shell .finance-indicators{grid-template-columns:minmax(0,1fr)}}
 @media(min-width:761px) and (max-width:1800px){.reporting-shell .ops-grid{grid-template-columns:minmax(0,1fr);grid-template-areas:"profit" "revenue" "payments" "expenses"}.reporting-shell .ops-payments{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:760px){

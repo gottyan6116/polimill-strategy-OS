@@ -8,7 +8,7 @@ export const executiveConfig={
  departmentBusinessUnits:{} as Record<string,string[]>,
  pageSizes:[5,10,20],
  statuses:['on_track','attention','missed','unset'] as const,
- colors:{actual:presentation.chart.actual,target:'#b5c4cc',achievement:'#1d4e89',profit:'#647c96',on_track:'var(--positive)',attention:'var(--attention)',missed:'var(--danger)',unset:'var(--muted)'},
+ colors:{actual:presentation.chart.actual,target:'var(--chart-budget)',achievement:'var(--navy)',profit:'var(--series-2)',on_track:'var(--positive)',attention:'var(--attention)',missed:'var(--danger)',unset:'var(--muted)'},
  businessColors:presentation.business,
  departmentOrder:organizationTree.departmentOrder,
 };

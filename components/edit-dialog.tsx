@@ -1,4 +1,5 @@
 "use client";
+import {useDialog} from '@/components/use-dialog';
 import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 import type { Goal, Kpi, Initiative } from "@/lib/model";
@@ -9,7 +10,7 @@ export type EditRecord =
   | { kind: "initiatives"; record: Initiative };
 export default function EditDialog({
   item,
-  onClose,
+  onClose:finishClose,
   onSaved,
 }: {
   item: EditRecord;
@@ -19,9 +20,7 @@ export default function EditDialog({
   const dialog = useRef<HTMLDialogElement>(null);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
-  useEffect(() => {
-    dialog.current?.showModal();
-  }, []);
+  const onClose=useDialog(dialog,finishClose,busy);
   async function save(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setBusy(true);
@@ -60,7 +59,7 @@ export default function EditDialog({
   return (
     <dialog
       ref={dialog}
-      className="edit-dialog"
+      className="dialog edit-dialog"
       onCancel={(e) => {
         if (busy) e.preventDefault();
         else onClose();

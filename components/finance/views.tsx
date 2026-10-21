@@ -99,7 +99,7 @@ export function PortfolioView({
                 r={Math.sqrt(Math.max(0,m.revenue) / maxRevenue) * 31}
                 fill={unit.color}
                 fillOpacity=".82"
-                stroke="white"
+                stroke="var(--surface)"
                 strokeWidth="3"
               />
               <text

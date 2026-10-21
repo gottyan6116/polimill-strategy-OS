@@ -1,4 +1,5 @@
 "use client";
+import {useDialog} from '@/components/use-dialog';
 import { useEffect, useRef, useState } from "react";
 import { X, Pencil } from "lucide-react";
 import {
@@ -14,7 +15,7 @@ function MonthEditor({
   record,
   period,
   name,
-  onClose,
+  onClose:finishClose,
   onSaved,
 }: {
   record: FinanceMonth;
@@ -26,9 +27,7 @@ function MonthEditor({
   const ref = useRef<HTMLDialogElement>(null),
     [busy, setBusy] = useState(false),
     [error, setError] = useState("");
-  useEffect(() => {
-    ref.current?.showModal();
-  }, []);
+  const onClose=useDialog(ref,finishClose,busy);
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setBusy(true);
@@ -70,7 +69,7 @@ function MonthEditor({
   return (
     <dialog
       ref={ref}
-      className="edit-dialog"
+      className="dialog edit-dialog"
       aria-labelledby="month-editor-title"
       onCancel={(e) => {
         if (busy) e.preventDefault();
@@ -142,7 +141,7 @@ function MonthEditor({
 export default function MonthDetails({
   data,
   periods,
-  onClose,
+  onClose:finishClose,
   onSaved,
 }: {
   data: FinanceWorkspace;
@@ -153,9 +152,7 @@ export default function MonthDetails({
   const ref = useRef<HTMLDialogElement>(null),
     [selected, setSelected] = useState(periods[0]?.id ?? ""),
     [editing, setEditing] = useState<FinanceMonth | null>(null);
-  useEffect(() => {
-    ref.current?.showModal();
-  }, []);
+  const onClose=useDialog(ref,finishClose);
   const rows = data.months
       .filter((m) => m.finance_period_id === selected)
       .sort((a, b) => a.month_index - b.month_index),
@@ -166,7 +163,7 @@ export default function MonthDetails({
     <>
       <dialog
         ref={ref}
-        className="edit-dialog ops-detail-dialog"
+        className="dialog edit-dialog ops-detail-dialog"
         aria-labelledby="month-details-title"
         onCancel={onClose}
       >

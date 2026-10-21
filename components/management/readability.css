@@ -1,0 +1,65 @@
+/* Semantic roles complement the shared type tokens; no page zoom or scaling. */
+.reporting-shell{font-size:var(--type-body);line-height:var(--leading-body)}
+.reporting-shell .sidebar{width:var(--sidebar-width);padding-inline:16px}
+.reporting-shell .main-shell{margin-left:var(--sidebar-width);width:calc(100% - var(--sidebar-width));min-width:0}
+.reporting-shell .dashboard-main{width:100%;max-width:none;padding:28px 24px}
+.reporting-shell .sidebar nav button,.reporting-shell .sidebar-bottom>button{font-size:var(--type-navigation);min-height:46px;padding:12px}
+.reporting-shell .workspace-label{letter-spacing:.04em;overflow-wrap:anywhere}
+.reporting-shell .topbar{min-height:72px;height:auto;padding:14px 24px}
+.reporting-shell .search-wrap{width:min(480px,60%);min-width:0}
+.reporting-shell .search-wrap input{font-size:var(--type-control)}
+.reporting-shell .page-heading h1{font-size:var(--type-page);line-height:var(--leading-heading)}
+.reporting-shell h2{font-size:var(--type-section);line-height:var(--leading-heading)}
+.reporting-shell h3{font-size:var(--type-card);line-height:var(--leading-heading)}
+.reporting-shell .page-heading .muted{font-size:var(--type-body);line-height:var(--leading-body)}
+.reporting-shell :is(button,input,select,textarea){font-size:var(--type-control)}
+.reporting-shell table,.reporting-shell table th,.reporting-shell table td{font-size:var(--type-body);line-height:1.65}
+.reporting-shell :is(small,.small,.finance-note,.finance-definitions,.section-footnote,.ops-series-explanation,.ops-basis,.page-footer){font-size:var(--type-caption)}
+.reporting-shell .panel-heading,.report-section-heading{gap:16px;flex-wrap:wrap}
+.reporting-shell .freshness dl>div{grid-template-columns:110px minmax(0,1fr);font-size:var(--type-body)}
+.reporting-shell .status-overview dt,.reporting-shell .management-facts dt,.reporting-shell .roic-node>span,.reporting-shell .finance-metrics article>span{font-size:var(--type-body)}
+.reporting-shell .finance-filters{flex-wrap:wrap}.reporting-shell .finance-filters label{flex-wrap:wrap}
+.reporting-shell .finance-two-col,.reporting-shell .finance-indicators{grid-template-columns:repeat(2,minmax(0,1fr))}
+.reporting-shell .ops-payments{grid-template-columns:1fr}
+.reporting-shell .ops-balance-legend button{grid-template-columns:8px minmax(0,1fr) auto;gap:8px}
+.reporting-shell .ops-card-body{overflow-x:auto;max-width:100%}
+.reporting-shell .finance-portfolio,.reporting-shell .panel:has(.finance-series),.reporting-shell .panel:has(.cash-bridge){overflow-x:auto}
+.reporting-shell .portfolio-chart{min-width:800px;max-height:none;height:auto}
+.reporting-shell .finance-series{min-width:790px;max-height:none;height:auto;padding:0 15px}
+.reporting-shell .cash-bridge{min-width:810px;max-height:none;height:auto}
+.reporting-shell .ops-month-chart{min-width:800px;max-height:none;height:auto}
+.reporting-shell .ops-expense-bars{min-width:600px;height:auto}
+.reporting-shell .trend-chart{min-width:640px;height:auto}
+.reporting-shell .org-summary{min-width:400px}.reporting-shell .org-summary dt{font-size:var(--type-caption)}
+.reporting-shell .org-company-node{width:520px;padding:20px 24px}
+.reporting-shell .org-company-node h2{font-size:var(--type-section)}
+.reporting-shell .org-department-main{min-height:300px;padding:20px 16px}
+.reporting-shell .org-department-title,.reporting-shell .org-kpi-name{font-size:var(--type-card);line-height:var(--leading-heading)}
+.reporting-shell .org-department-mission,.reporting-shell .org-company-description{font-size:var(--type-body)}
+.reporting-shell .org-department-owner strong,.reporting-shell .org-department-counts,.reporting-shell .org-department-progress,.reporting-shell .org-kpi-unset{font-size:var(--type-body)}
+.reporting-shell .org-department-mission{min-height:48px}.reporting-shell .org-department-owner{margin:12px 0}
+.reporting-shell .org-department-counts strong{font-size:var(--type-body)}
+.reporting-shell .org-goal-link{align-items:flex-start;flex-wrap:wrap;font-size:var(--type-body);padding:8px 0;line-height:var(--leading-body)}
+.reporting-shell .org-goal-link>span{width:100%;font-size:var(--type-caption)}
+.reporting-shell .org-kpi-node{padding:18px 16px;gap:12px;min-height:156px}
+.reporting-shell .org-kpi-comparison{font-size:var(--type-caption)}
+.reporting-shell .org-company-menu>button,.reporting-shell .org-department-toggle{width:36px;height:36px}
+.reporting-shell .org-department-title{padding-right:22px}.reporting-shell .org-department-toggle{right:5px;top:12px}
+.reporting-shell .org-tree-viewport{padding-top:8px}.reporting-shell .org-view-toolbar{margin-bottom:12px}.reporting-shell .org-kpi-list{gap:20px}
+.reporting-shell .org-goal-group{gap:12px}.reporting-shell .org-tree-note{font-size:var(--type-caption)}
+@media(min-width:761px){.reporting-shell .org-strategy-tree{min-width:1100px}}
+@media(max-width:1500px){.reporting-shell .finance-two-col,.reporting-shell .finance-indicators{grid-template-columns:minmax(0,1fr)}}
+@media(min-width:761px) and (max-width:1800px){.reporting-shell .ops-grid{grid-template-columns:minmax(0,1fr);grid-template-areas:"profit" "revenue" "payments" "expenses"}.reporting-shell .ops-payments{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){
+ .reporting-shell .main-shell{margin-left:0;width:100%}.reporting-shell .sidebar{width:var(--sidebar-width)}
+ .reporting-shell .dashboard-main{padding:24px 16px}.reporting-shell .topbar{padding:12px;gap:10px}
+ .reporting-shell .search-wrap{width:auto;flex:1;padding:8px;gap:6px}.reporting-shell .user-info{font-size:var(--type-caption);max-width:76px}
+ .reporting-shell .org-summary{width:100%;min-width:0;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 0;padding:16px 0}
+ .reporting-shell .org-summary>div:nth-child(2){border-right:0}.reporting-shell .org-company-node{width:100%;padding:18px}
+ .reporting-shell .org-department-main{min-height:0;padding:20px}.reporting-shell .org-department-mission{min-height:0}
+ .reporting-shell .org-tree-controls{flex-wrap:wrap}.reporting-shell .org-menu-popover{min-width:220px}
+ .reporting-shell .hypothesis-banner{flex-wrap:wrap;gap:8px}.reporting-shell .org-kpi-node{min-height:0}
+ .reporting-shell .finance-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.reporting-shell .ops-payments{grid-template-columns:minmax(0,1fr)}
+ .reporting-shell .status-overview dl{grid-template-columns:repeat(2,minmax(0,1fr))}.reporting-shell .freshness dl>div{grid-template-columns:minmax(0,1fr)}
+ .reporting-shell .freshness dd{text-align:left}.reporting-shell .report-toolbar{flex-wrap:wrap}
+}

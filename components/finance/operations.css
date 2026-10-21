@@ -10,7 +10,7 @@
   gap: 16px;
 }
 .ops-caption-row > p {
-  font-size: 11px;
+  font-size:var(--type-caption);
   color: #7d90a1;
 }
 .ops-caption-row label {
@@ -18,7 +18,7 @@
   align-items: center;
   gap: 8px;
   color: #6e8295;
-  font-size: 11px;
+  font-size:var(--type-caption);
   white-space: nowrap;
 }
 .ops-caption-row input {
@@ -26,7 +26,7 @@
   border: 1px solid #dce6ee;
   border-radius: 5px;
   padding: 6px 9px;
-  font-size: 11px;
+  font-size:var(--type-control);
   color: #304b63;
 }
 .ops-grid {
@@ -60,7 +60,7 @@
   padding: 14px 19px 18px;
 }
 .ops-card-caption {
-  font-size: 10px;
+  font-size:var(--type-caption);
   color: #8a9ba9;
 }
 .ops-card-value {
@@ -72,7 +72,7 @@
   letter-spacing: -0.02em;
 }
 .ops-card-value > small {
-  font-size: 10px;
+  font-size:var(--type-caption);
   font-weight: 400;
   margin-left: 6px;
   color: #8799a8;
@@ -84,7 +84,7 @@
   border: 1px solid #e2eaf0;
   border-radius: 4px;
   padding: 3px 7px;
-  font-size: 10px;
+  font-size:var(--type-control);
   color: #60798d;
   white-space: nowrap;
 }
@@ -125,20 +125,20 @@
   margin-top: 4px;
 }
 .ops-expense-legend > div > span {
-  font-size: 10px;
+  font-size:var(--type-caption);
   flex: 1;
   color: #6f8496;
   line-height: 1.5;
 }
 .ops-expense-legend strong {
   display: block;
-  font-size: 12px;
+  font-size:var(--type-body);
   color: #34526a;
   font-weight: 650;
   font-variant-numeric: tabular-nums;
 }
 .ops-expense-legend small {
-  font-size: 10px;
+  font-size:var(--type-caption);
   color: #8a9ba9;
   font-variant-numeric: tabular-nums;
   margin-top: 4px;
@@ -173,20 +173,20 @@
   gap: 6px;
   text-align: left;
   padding: 0;
-  font-size: 10px;
+  font-size:var(--type-control);
   color: #71879a;
 }
 .ops-balance-legend button:hover {
   text-decoration: underline;
 }
 .ops-balance-legend strong {
-  font-size: 11px;
+  font-size:var(--type-caption);
   font-weight: 650;
   color: #31516a;
   font-variant-numeric: tabular-nums;
 }
 .ops-basis {
-  font-size: 9px;
+  font-size:var(--type-caption);
   color: #9aa8b4;
   margin-top: 18px;
 }
@@ -197,16 +197,16 @@
   padding: 14px;
 }
 .ops-payments .panel-heading h2 {
-  font-size: 12px;
+  font-size:var(--type-section);
 }
 .ops-payments .ops-card-value {
   font-size: 23px;
 }
 .ops-payments .ops-card-value small {
-  font-size: 9px;
+  font-size:var(--type-caption);
 }
 .ops-payments .ops-detail-button {
-  font-size: 9px;
+  font-size:var(--type-control);
   padding: 2px 5px;
 }
 .ops-detail-dialog {
@@ -222,7 +222,7 @@
   align-items: center;
   gap: 10px;
   color: #71869a;
-  font-size: 12px;
+  font-size:var(--type-body);
 }
 .ops-detail-filter select,
 .ops-invoice-toolbar select,
@@ -231,7 +231,7 @@
   border-radius: 5px;
   background: white;
   padding: 8px 10px;
-  font-size: 12px;
+  font-size:var(--type-control);
   color: #36556d;
 }
 .ops-total-row {
@@ -251,7 +251,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 11px;
+  font-size:var(--type-control);
   color: #72879a;
 }
 .ops-invoice-toolbar > input {
@@ -267,17 +267,17 @@
   min-width: 850px;
 }
 .ops-invoice-table td:first-child strong {
-  font-size: 11px;
+  font-size:var(--type-body);
   font-weight: 650;
 }
 .ops-invoice-table td small {
-  font-size: 9px;
+  font-size:var(--type-body);
 }
 .ops-status {
   display: inline-block;
   border-radius: 4px;
   padding: 2px 6px;
-  font-size: 10px;
+  font-size:var(--type-caption);
   white-space: nowrap;
 }
 .ops-undated {
@@ -303,7 +303,7 @@
   margin-top: 21px;
 }
 .ops-settlement-history h3 {
-  font-size: 13px;
+  font-size:var(--type-section);
   margin: 0 0 10px;
   font-weight: 700;
 }
@@ -316,11 +316,11 @@
   padding: 11px 0;
 }
 .ops-settlement-history strong {
-  font-size: 12px;
+  font-size:var(--type-body);
   display: block;
 }
 .ops-settlement-history small {
-  font-size: 10px;
+  font-size:var(--type-caption);
   display: block;
   color: #8296a6;
   margin-top: 4px;
@@ -378,13 +378,13 @@
     gap: 10px;
   }
   .ops-caption-row > p {
-    font-size: 10px;
+    font-size:var(--type-caption);
   }
   .ops-caption-row label {
-    font-size: 10px;
+    font-size:var(--type-caption);
   }
   .ops-caption-row input {
-    font-size: 11px;
+    font-size:var(--type-control);
   }
   .ops-card-body {
     padding: 12px 14px 14px;
@@ -393,7 +393,7 @@
     font-size: 24px;
   }
   .ops-card-caption {
-    font-size: 9px;
+    font-size:var(--type-caption);
   }
   .ops-month-chart {
     margin-top: 7px;
@@ -407,13 +407,13 @@
     gap: 9px;
   }
   .ops-expense-legend > div > span {
-    font-size: 9px;
+    font-size:var(--type-caption);
   }
   .ops-expense-legend small {
-    font-size: 9px;
+    font-size:var(--type-caption);
   }
   .ops-expense-legend strong {
-    font-size: 11px;
+    font-size:var(--type-caption);
   }
   .ops-donut {
     min-width: 0;
@@ -423,7 +423,7 @@
     padding: 11px 10px;
   }
   .ops-payments .panel-heading h2 {
-    font-size: 11px;
+    font-size:var(--type-section);
   }
   .ops-payments .ops-card-body {
     padding: 12px 10px;
@@ -432,37 +432,37 @@
     font-size: 22px;
   }
   .ops-payments .ops-card-value > small {
-    font-size: 8px;
+    font-size:var(--type-caption);
     margin-left: 3px;
   }
   .ops-payments .ops-detail-button {
-    font-size: 8px;
+    font-size:var(--type-control);
     padding: 2px 4px;
   }
   .ops-payments .ops-detail-button svg {
     width: 10px;
   }
   .ops-balance-legend button {
-    font-size: 9px;
+    font-size:var(--type-control);
     grid-template-columns: 7px 1fr;
     gap: 4px;
   }
   .ops-balance-legend button strong {
     grid-column: 2;
-    font-size: 11px;
+    font-size:var(--type-control);
   }
   .ops-balance-legend i {
     width: 7px;
     height: 7px;
   }
   .ops-basis {
-    font-size: 8px;
+    font-size:var(--type-caption);
   }
   .ops-detail-dialog {
     padding: 20px 13px;
   }
   .ops-detail-dialog h2 {
-    font-size: 19px;
+    font-size:var(--type-section);
   }
   .ops-invoice-toolbar {
     gap: 9px;
@@ -473,7 +473,7 @@
   }
   .ops-invoice-toolbar .primary-button {
     margin-left: auto;
-    font-size: 11px;
+    font-size:var(--type-control);
   }
   .ops-month-fields {
     gap: 0 10px;

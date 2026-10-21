@@ -44,8 +44,8 @@ export function PortfolioView({
           role="group"
           aria-label="事業別の売上成長率とROICのバブルチャート"
         >
-          {ya.ticks.map(v=><g key={v}><line x1="90" x2="710" y1={y(v)} y2={y(v)} stroke={v===0?presentation.chart.axis:presentation.chart.grid}/><text x="78" y={y(v)+4} textAnchor="end" fill={presentation.chart.text} fontSize="11">{number(v,axisDigits(ya.step))}%</text></g>)}
-          {xa.ticks.map(v=><g key={v}><line x1={x(v)} x2={x(v)} y1="50" y2="290" stroke={v===0?presentation.chart.axis:presentation.chart.grid}/><text x={x(v)} y="311" textAnchor="middle" fill={presentation.chart.text} fontSize="11">{number(v,axisDigits(xa.step))}%</text></g>)}
+          {ya.ticks.map(v=><g key={v}><line x1="90" x2="710" y1={y(v)} y2={y(v)} stroke={v===0?presentation.chart.axis:presentation.chart.grid}/><text x="78" y={y(v)+4} textAnchor="end" fill={presentation.chart.text} fontSize={presentation.typography.chart}>{number(v,axisDigits(ya.step))}%</text></g>)}
+          {xa.ticks.map(v=><g key={v}><line x1={x(v)} x2={x(v)} y1="50" y2="290" stroke={v===0?presentation.chart.axis:presentation.chart.grid}/><text x={x(v)} y="311" textAnchor="middle" fill={presentation.chart.text} fontSize={presentation.typography.chart}>{number(v,axisDigits(xa.step))}%</text></g>)}
           <line
             x1={x(reference.growthReferencePercent)}
             x2={x(reference.growthReferencePercent)}
@@ -62,7 +62,7 @@ export function PortfolioView({
             stroke={presentation.chart.axis}
             strokeDasharray="4 4"
           />
-          <text x="70" y="20" fill={presentation.chart.text} fontSize="12">
+          <text x="70" y="20" fill={presentation.chart.text} fontSize={presentation.typography.chart}>
             ROIC
           </text>
           <text
@@ -70,7 +70,7 @@ export function PortfolioView({
             y="350"
             textAnchor="middle"
             fill={presentation.chart.text}
-            fontSize="12"
+            fontSize={presentation.typography.chart}
           >
             売上高成長率（前年度比）
           </text>
@@ -109,7 +109,7 @@ export function PortfolioView({
                 textLength={unit.name.length > 50 ? 600 : undefined}
                 lengthAdjust="spacingAndGlyphs"
                 fill={presentation.chart.text}
-                fontSize="12"
+                fontSize={presentation.typography.chart}
                 fontWeight="600"
               >
                 {unit.name}

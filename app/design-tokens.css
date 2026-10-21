@@ -1,4 +1,6 @@
 :root{
+ --type-page:28px;--type-section:20px;--type-card:16px;--type-body:14px;--type-reading:16px;--type-control:14px;--type-navigation:15px;--type-caption:12px;
+ --leading-body:1.7;--leading-heading:1.45;--sidebar-width:224px;
  --navy:#102541;--navy-deep:#0a1b31;
  --accent:#177d75;--accent-soft:#eaf3f1;--ink:#263238;--muted:#6b7479;--line:#dce1e3;--surface:#fff;--canvas:#f5f6f6;
  --danger:#b94c4c;--danger-soft:#fbefef;--positive:#17734d;--attention:#896729;

@@ -12,6 +12,7 @@ import ExecutiveSummary from './management/summary';
 import EntityPages from './management/entity-pages';
 import OrganizationGoalPage,{OrganizationSummary} from './management/organization-page';
 import './management/reporting.css';
+import './management/readability.css';
 type PageId=keyof typeof pageDescriptions;
 export default function Dashboard({initial}:{initial:Workspace}){
  const [data,setData]=useState(initial),[finance,setFinance]=useState<FinanceWorkspace|null>(null),[tab,setTab]=useState<PageId>('dashboard'),[mobile,setMobile]=useState(false),[query,setQuery]=useState(''),[editing,setEditing]=useState<EditRecord|null>(null),[notice,setNotice]=useState(''),[error,setError]=useState(''),[financeView,setFinanceView]=useState('portfolio'),[detail,setDetail]=useState<{kind:'kpi'|'initiative'|'department';id:string}|null>(null);

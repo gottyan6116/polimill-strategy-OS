@@ -1,4 +1,5 @@
 "use client";
+import {useDialog} from '@/components/use-dialog';
 import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 import {
@@ -10,7 +11,7 @@ export default function FinanceEditor({
   record,
   name,
   hasPrevious,
-  onClose,
+  onClose:finishClose,
   onSaved,
 }: {
   record: FinanceRecord;
@@ -22,9 +23,7 @@ export default function FinanceEditor({
   const ref = useRef<HTMLDialogElement>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  useEffect(() => {
-    ref.current?.showModal();
-  }, []);
+  const onClose=useDialog(ref,finishClose,busy);
   async function save(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setBusy(true);
@@ -63,7 +62,7 @@ export default function FinanceEditor({
   return (
     <dialog
       ref={ref}
-      className="edit-dialog finance-editor"
+      className="dialog edit-dialog finance-editor"
       aria-labelledby="finance-editor-title"
       onCancel={(e) => {
         if (busy) e.preventDefault();

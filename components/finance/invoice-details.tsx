@@ -1,4 +1,5 @@
 "use client";
+import {useDialog} from '@/components/use-dialog';
 import { useEffect, useRef, useState } from "react";
 import { X, Pencil, Plus, History } from "lucide-react";
 import type { FinanceRecord, FinanceWorkspace } from "@/lib/finance";
@@ -41,7 +42,7 @@ function InvoiceEditor({
   kind,
   data,
   periods,
-  onClose,
+  onClose:finishClose,
   onSaved,
 }: {
   record: Invoice | null;
@@ -54,9 +55,7 @@ function InvoiceEditor({
   const ref = useRef<HTMLDialogElement>(null),
     [busy, setBusy] = useState(false),
     [error, setError] = useState("");
-  useEffect(() => {
-    ref.current?.showModal();
-  }, []);
+  const onClose=useDialog(ref,finishClose,busy);
   const first =
     periods.find((p) => p.id === record?.finance_period_id) ?? periods[0];
   async function submit(e: React.FormEvent<HTMLFormElement>) {
@@ -89,7 +88,7 @@ function InvoiceEditor({
   return (
     <dialog
       ref={ref}
-      className="edit-dialog"
+      className="dialog edit-dialog"
       aria-labelledby="invoice-edit-title"
       onCancel={(e) => {
         if (busy) e.preventDefault();
@@ -204,7 +203,7 @@ function InvoiceEditor({
 function SettlementDialog({
   record,
   data,
-  onClose,
+  onClose:finishClose,
   onSaved,
 }: {
   record: Invoice;
@@ -215,9 +214,7 @@ function SettlementDialog({
   const ref = useRef<HTMLDialogElement>(null),
     [busy, setBusy] = useState(false),
     [error, setError] = useState("");
-  useEffect(() => {
-    ref.current?.showModal();
-  }, []);
+  const onClose=useDialog(ref,finishClose,busy);
   const invoice = data.invoices.find((i) => i.id === record.id) ?? record;
   const current = invoiceBalance(invoice, data.settlements, japanDate()),
     entries = data.settlements.filter((s) => s.invoice_id === record.id);
@@ -266,7 +263,7 @@ function SettlementDialog({
   return (
     <dialog
       ref={ref}
-      className="edit-dialog ops-settlement-dialog"
+      className="dialog edit-dialog ops-settlement-dialog"
       aria-labelledby="settlement-title"
       onCancel={(e) => {
         if (busy) e.preventDefault();
@@ -381,7 +378,7 @@ export default function InvoiceDetails({
   periods,
   asOf,
   initialFilter = "open",
-  onClose,
+  onClose:finishClose,
   onSaved,
   initialQuery='',
 }: {
@@ -399,9 +396,7 @@ export default function InvoiceDetails({
     [query, setQuery] = useState(initialQuery),
     [editor, setEditor] = useState<{ record: Invoice | null } | null>(null),
     [settling, setSettling] = useState<Invoice | null>(null);
-  useEffect(() => {
-    ref.current?.showModal();
-  }, []);
+  const onClose=useDialog(ref,finishClose);
   const ids = new Set(periods.map((p) => p.id)),
     incoming = kind === "receivable";
   const rows = data.invoices
@@ -424,7 +419,7 @@ export default function InvoiceDetails({
     <>
       <dialog
         ref={ref}
-        className="edit-dialog ops-detail-dialog"
+        className="dialog edit-dialog ops-detail-dialog"
         aria-labelledby="invoice-details-title"
         onCancel={onClose}
       >

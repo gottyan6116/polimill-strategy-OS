@@ -31,11 +31,11 @@ test('list retains filters and sorting across view switches and global search st
   await page.getByRole('button',{name:'ツリー表示',exact:true}).click();await page.getByRole('button',{name:'一覧表示',exact:true}).click();await expect(list.getByLabel('検索',{exact:true})).toHaveValue('プロダクト');await expect(list.getByRole('combobox',{name:/^並べ替え/})).toHaveValue('goals');await expect(list.locator('tbody tr')).toHaveCount(1);
   await page.getByLabel('組織・目標・KPI・施策を検索').fill('事業開発部門');await page.locator('.search-results button').first().click();await expect(page.getByRole('heading',{name:'事業開発部門',exact:true})).toBeVisible();await page.getByRole('dialog').getByRole('button',{name:'閉じる',exact:true}).click();
 });
-test('tree is four columns on desktop, internally scrolls on tablet and stacks on mobile',async({page})=>{
+test('tree is four columns on desktop, wraps on tablet and stacks on mobile',async({page})=>{
   await page.setViewportSize({width:1440,height:1100});await page.emulateMedia({reducedMotion:'reduce'});await open(page);
   const columns=()=>page.locator('.org-department-node').evaluateAll(nodes=>nodes.map(n=>{const r=n.getBoundingClientRect();return{x:r.x,y:r.y,w:r.width}}));
   let boxes=await columns();expect(new Set(boxes.map(r=>Math.round(r.y))).size).toBe(1);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
-  await page.setViewportSize({width:1024,height:900});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);expect(await page.locator('.org-tree-viewport').evaluate(e=>e.scrollWidth>e.clientWidth)).toBe(true);
+  await page.setViewportSize({width:1024,height:900});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);expect(await page.locator('.org-tree-viewport').evaluate(e=>e.scrollWidth<=e.clientWidth+1)).toBe(true);
   await page.setViewportSize({width:390,height:844});boxes=await columns();expect(new Set(boxes.map(r=>Math.round(r.y))).size).toBe(boxes.length);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   await page.getByRole('button',{name:'プロダクト部門のKPIを折りたたむ',exact:true}).click();await page.getByRole('button',{name:'プロダクト部門のKPIを展開する',exact:true}).click();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });
